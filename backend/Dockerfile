@@ -1,0 +1,37 @@
+FROM python:3.11-alpine
+LABEL maintainer='mezamateoj@gmail.com'
+
+ENV PYTHONUNBUFFERED=1 
+
+
+COPY requirements.txt /tmp/requirements.txt
+COPY ./ /app
+
+WORKDIR /app
+
+EXPOSE 8000
+
+
+# create venv --this is optional 
+# install requirements
+RUN python -m venv /py && \
+    /py/bin/pip install --upgrade pip && \
+
+    apk add --update --no-cache postgresql-client && \
+    apk add --update --no-cache --virtual .tmp-build-deps \
+        build-base postgresql-dev musl-dev && \
+
+    /py/bin/pip install -r /tmp/requirements.txt && \
+    rm -rf /tmp && \
+    apk del .tmp-build-deps && \
+    # creates a user in the vm
+    adduser \
+        --disabled-password \
+        --no-create-home \
+        django-user
+
+ENV PATH="/py/bin:$PATH"
+
+# this swithces to this user
+# so everthing will run from this user
+USER django-user
