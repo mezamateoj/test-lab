@@ -1,6 +1,8 @@
 from django.db import models
 
-# Create your models here.
+# This models we generated with inspectdb from django
+# https://docs.djangoproject.com/en/5.1/howto/legacy-databases/
+
 class Card(models.Model):
     id = models.TextField(primary_key=True)
     name = models.TextField()
